@@ -123,6 +123,15 @@ class Carbon extends DateTime
    protected static $testNow;
 
    /**
+    * Language items to use for human diffs.
+    *
+    * @var array
+    */
+   protected static $humanDiffLanguage = array();
+
+   const HUMAN_DIFF_RIGHT_NOW_SECONS = 30;
+
+   /**
     * Creates a DateTimeZone from a string or a DateTimeZone
     *
     * @param  DateTimeZone|string $object
@@ -1674,6 +1683,16 @@ class Carbon extends DateTime
       return $abs ? abs($value) : $value;
    }
 
+   protected static function getHumanDiffLanguage($item, $default = null)
+   {
+      return isset(static::$humanDiffLanguage[$item]) ? static::$humanDiffLanguage[$item] : ($default ? $default : $item);
+   }
+
+   public static function setHumanDiffLanguage(array $items)
+   {
+       static::$humanDiffLanguage = $items;
+   }
+
    /**
     * Get the difference in a human readable format.
     *
@@ -1730,26 +1749,35 @@ class Carbon extends DateTime
          $delta = floor($delta / $divValue);
       }
 
+      $baseUnit = $unit;
+
       if ($delta == 0) {
          $delta = 1;
       }
 
-      $txt = $delta . ' ' . $unit;
-      $txt .= $delta == 1 ? '' : 's';
+      if ($delta > 1) {
+         $unit .= 's';
+      }
+
+      $txt = $delta . ' ' . static::getHumanDiffLanguage($unit);
 
       if ($isNow) {
          if ($isFuture) {
-            return $txt . ' from now';
+            return sprintf(static::getHumanDiffLanguage('from now', '%s from now'), $txt);
          }
 
-         return $txt . ' ago';
+         if ($delta <= static::HUMAN_DIFF_RIGHT_NOW_SECONS && $baseUnit == 'second') {
+            return sprintf(static::getHumanDiffLanguage('right now', 'right now'));
+         }
+
+         return sprintf(static::getHumanDiffLanguage('ago', '%s ago'), $txt);
       }
 
       if ($isFuture) {
-         return $txt . ' after';
+         return sprintf(static::getHumanDiffLanguage('after', '%s after'), $txt);
       }
 
-      return $txt . ' before';
+      return sprintf(static::getHumanDiffLanguage('before', '%s before'), $txt);
    }
 
    ///////////////////////////////////////////////////////////////////
