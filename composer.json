@@ -24,7 +24,7 @@
   },
   "autoload": {
     "psr-4": {
-      "niclasleonbock\\Carbon": "src/Carbon"
+      "niclasleonbock\\Carbon\\": "src/Carbon"
     }
   }
 }
