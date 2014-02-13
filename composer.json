@@ -23,8 +23,8 @@
     "phpunit/phpunit": "3.7.*"
   },
   "autoload": {
-    "psr-0": {
-      "niclasleonbock\\Carbon": "src"
+    "psr-4": {
+      "niclasleonbock\\Carbon": "src/Carbon"
     }
   }
 }
